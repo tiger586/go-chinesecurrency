@@ -48,7 +48,7 @@ func formatSection(n int64) string {
 	temp := n
 	lastZero := true // 預設為 true，避免末尾出現零
 
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		digit := temp % 10
 		if digit == 0 {
 			if !lastZero { // 只有在之前有非零數字時，才補一個「零」
