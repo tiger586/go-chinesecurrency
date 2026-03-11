@@ -9,7 +9,7 @@ import (
 func main() {
 	// float64
 	var price float64
-	price = 6666
+	price = 10050.08
 
 	// 情況 A：預設 (傳統台灣中文)
 	fmt.Println("預設：", currency.ToChineseAmount(price))
@@ -30,9 +30,9 @@ func main() {
 	currency.SetLangConfig(currency.LangConfig{
 		Digits:   []string{"零", "一", "二", "三", "四", "五", "六", "七", "八", "九"},
 		Units:    []string{"", "十", "百", "千"},
-		BigUnits: []string{"", "万", "亿", "兆"},
-		Negative: "负",
-		Symbol:   "块",
+		BigUnits: []string{"", "萬", "億", "兆"},
+		Negative: "負",
+		Symbol:   "元",
 		SubUnits: []string{"毛", "分"},
 		Whole:    "整",
 	})
