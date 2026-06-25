@@ -13,15 +13,63 @@ var (
 
 type ChineseNumber string
 
-// Raw 去除「圓」、「整」等單位，只保留純大寫數字與角分
+// Raw 去除「圓」、「整」等單位，只保留純大寫數字
+//
+// 如果有小數時會加上 config 中設定的 Dot: "點" 或是 Dot: "点"，且小數點後數字不需要「角、分」
 func (c ChineseNumber) Raw() string {
 	configMu.RLock()
 	cfg := currentConfig
 	configMu.RUnlock()
 
 	res := string(c)
+
+	// 1. 如果包含「整」，代表是整數，直接去掉「圓」和「整」
+	if strings.Contains(res, cfg.Whole) {
+		res = strings.ReplaceAll(res, cfg.Symbol, "")
+		res = strings.ReplaceAll(res, cfg.Whole, "")
+		return res
+	}
+
+	// 2. 處理有小數的情況（動態檢查配置中的小數點單位，如「角」、「分」）
+	hasSubUnit := false
+	for _, subUnit := range cfg.SubUnits {
+		if subUnit != "" && strings.Contains(res, subUnit) {
+			hasSubUnit = true
+			break
+		}
+	}
+
+	if hasSubUnit {
+		// 取得配置中的「點」，如果沒設定則預設用 "點"
+		dotStr := cfg.Dot
+		if dotStr == "" {
+			dotStr = "點"
+		}
+
+		// 關鍵修正點：檢查字串裡有沒有「圓/元」
+		if strings.Contains(res, cfg.Symbol) {
+			// 有「圓」：正常將「圓 / 元」替換成配置的「點 / 点」
+			res = strings.ReplaceAll(res, cfg.Symbol, dotStr)
+		} else {
+			// 沒有「圓」：代表是純小數（例如：伍角捌分），直接在最前面補上「零點」
+			zeroStr := cfg.Digits[0]
+			if zeroStr == "" {
+				zeroStr = "零"
+			}
+			res = zeroStr + dotStr + res
+		}
+
+		// 循環拔除所有小數單位（例如：角、分）
+		for _, subUnit := range cfg.SubUnits {
+			if subUnit != "" {
+				res = strings.ReplaceAll(res, subUnit, "")
+			}
+		}
+		return res
+	}
+
+	// 3. 安全防線
 	res = strings.ReplaceAll(res, cfg.Symbol, "")
-	res = strings.ReplaceAll(res, cfg.Whole, "")
 	return res
 }
 
@@ -38,7 +86,7 @@ func SetLangConfig(config LangConfig) {
 }
 
 // ToChineseAmount 將數字轉換為中文財務大寫 (支援小數點兩位)
-func ToChineseAmount(f float64) ChineseNumber {
+func ToString(f float64) ChineseNumber {
 	// func ToChineseAmount(f float64) string {
 	configMu.RLock()
 	cfg := currentConfig
@@ -158,4 +206,11 @@ func sanitize(s string, c LangConfig) string {
 		return c.Digits[0]
 	}
 	return s
+}
+
+// ToChineseAmount 保留給舊用戶，請改用 ToString()
+//
+// Deprecated: Use ToString() instead.
+func ToChineseAmount(amount float64) ChineseNumber {
+	return ToString(amount)
 }

@@ -9,6 +9,7 @@ type LangConfig struct {
 	Symbol   string   // 圓 / 元
 	SubUnits []string // 角、分
 	Whole    string   // 整
+	Dot      string   // 點 / 点
 }
 
 var (
@@ -21,6 +22,7 @@ var (
 		Symbol:   "圓",
 		SubUnits: []string{"角", "分"},
 		Whole:    "整",
+		Dot:      "點",
 	}
 
 	// Simplified 簡體中文配置
@@ -32,5 +34,6 @@ var (
 		Symbol:   "元",
 		SubUnits: []string{"角", "分"},
 		Whole:    "整",
+		Dot:      "点",
 	}
 )

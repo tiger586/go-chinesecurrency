@@ -37,10 +37,10 @@ func main() {
 	num := 10050.08
 	
 	// 預設輸出：壹萬零伍拾圓零捌分
-	fmt.Println(currency.ToChineseAmount(num))
+	fmt.Println(currency.ToString(num))
 
 	// 取得純數字大寫 (去除 圓、整)：壹萬零伍拾零捌分
-	fmt.Println(currency.ToChineseAmount(num).Raw())
+	fmt.Println(currency.ToString(num).Raw())
 }
 ```
 
@@ -51,9 +51,9 @@ func main() {
 currency.SetLangConfig(currency.Simplified)
 
 // 輸出：壹万零伍拾元零捌分
-fmt.Println(currency.ToChineseAmount(10050.08))
+fmt.Println(currency.ToString(10050.08))
 // 取得純數字大寫 (去除 元、整)：壹万零伍拾零捌分
-fmt.Println(currency.ToChineseAmount(10050.08).Raw())
+fmt.Println(currency.ToString(10050.08).Raw())
 ```
 
 ### 3. 自定義語系或單位
@@ -71,9 +71,9 @@ currency.SetLangConfig(currency.LangConfig{
 })
 
 // 輸出：一萬零五十元零八分
-fmt.Println(currency.ToChineseAmount(10050.08))
+fmt.Println(currency.ToString(10050.08))
 // 取得純數字大寫 (去除 元、整)：一萬零五十零八分
-fmt.Println(currency.ToChineseAmount(10050.08).Raw())
+fmt.Println(currency.ToString(10050.08).Raw())
 ```
 
 ## 📝 範例參考 example/main.go
@@ -96,3 +96,12 @@ go run example/main.go
 ```bash
 go test -v
 ```
+## 📖更新說明：
+- v1.2.0 更新主要函數：  
+  1. 將原本冗長的 ToChineseAmount 改為更直觀的 ToString  
+  2. ToChineseAmount 舊函數向下相容可以繼續使用
+  3. 修正 .Raw() 語義不明確，120.45 原是「壹佰貳拾肆角伍分」改後「壹佰貳拾點肆伍」
+     去除「圓」、「整」等單位，只保留純大寫數字，  
+     如果有小數時會加上 config 中設定的 Dot: "點" 或是 Dot: "点"，  
+	 且小數點後數字不需要「角、分」。	 
+
